@@ -1,16 +1,23 @@
 {
-  "name": "respira",
-  "version": "1.0.0",
-  "description": "Tienda online de productos energéticos para el hogar: velas, esencias, sahumerios y más",
-  "main": "app.js",
-  "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Mailen Rodrigo",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.21.2",
-    "express-handlebars": "^8.0.1"
-  }
+	"name": "respira",
+	"version": "1.0.0",
+	"description": "Tienda online de productos energéticos para el hogar: velas, esencias, sahumerios y más",
+	"main": "app.js",
+	"type": "module",
+	"scripts": {
+		"start": "node --no-warnings ./src/app.js",
+		"dev": "nodemon ./src/app.js",
+		"stop-linux": "killall -9 node",
+		"stop-windows": "taskkill /F /IM node.exe",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Mailen Rodrigo",
+	"license": "MIT",
+	"dependencies": {
+		"express": "^4.21.2",
+		"express-handlebars": "^8.0.1"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.9"
+	}
 }
