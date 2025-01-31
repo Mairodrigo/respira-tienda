@@ -1,7 +1,7 @@
 // Librerías necesarias y enrutadores
 import express from "express";
 import productsRouter from "./routes/products.router.js";
-//import cartsRouter from "./routes/carts.router.js";
+import cartsRouter from "./routes/carts.router.js";
 
 // Instancia de la aplicación de Express
 const app = express();
@@ -14,7 +14,7 @@ app.use(express.json());
 
 // Configuración de rutas principales
 app.use("/api/products", productsRouter);
-//app.use("/api/carts", cartsRouter);
+app.use("/api/carts", cartsRouter);
 
 //Manejo de rutas no encontradas
 app.use((req, res) => {
