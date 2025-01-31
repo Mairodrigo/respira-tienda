@@ -4,7 +4,7 @@ import ProductManager from "../managers/ProductManager.js";
 const productsRouter = express.Router();
 const productManager = new ProductManager("./src/data/products.json");
 
-//GET /api/products - Obtener todos los productos
+//GET /api/products - Listar todos los productos
 productsRouter.get("/", async (req, res) => {
 	try {
 		//Recupera los productos del archivo products.json
@@ -47,10 +47,10 @@ productsRouter.post("/", async (req, res) => {
 			description,
 			code,
 			price,
-			status: status !== undefined ? status : true, // Si no envían status, será true por defecto
+			status: status !== undefined ? status : true, 
 			stock,
 			category,
-			thumbnail: thumbnail || "" // Si no envían imagen, será un string vacío
+			thumbnail: thumbnail || "" 
 		});
 
 		res.status(201).json({ message: "Producto agregado", product: newProduct });

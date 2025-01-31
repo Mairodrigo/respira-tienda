@@ -1,7 +1,7 @@
 // Librerías necesarias y enrutadores
 import express from "express";
 import productsRouter from "./routes/products.router.js";
-import cartsRouter from "./routes/carts.router.js";
+import cartsRouter from "./routes/carts.router.js"
 
 // Instancia de la aplicación de Express
 const app = express();
