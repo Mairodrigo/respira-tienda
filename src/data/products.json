@@ -1,0 +1,13 @@
+[
+	{
+		"id": 1,
+		"title": "Sahumerios de incienso",
+		"description": "Sahumerios de 90 minutos de duración",
+		"code": "SSM038",
+		"price": 2500,
+		"status": true,
+		"stock": 50,
+		"category": "Sahumerios",
+		"thumbnail": ""
+	}
+]
