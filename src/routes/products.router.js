@@ -4,7 +4,7 @@ import ProductManager from "../managers/ProductManager.js";
 const productsRouter = express.Router();
 const productManager = new ProductManager("./src/data/products.json");
 
-// Endpoint para obtener todos los productos
+//GET /api/products - Obtener todos los productos
 productsRouter.get("/", async (req, res) => {
 	try {
 		//Recupera los productos del archivo products.json
@@ -15,11 +15,80 @@ productsRouter.get("/", async (req, res) => {
 	}
 });
 
-// Endpoint para obtener un producto especifico segun el ID
+// GET /api/products/:pid - Obtener un producto por su ID
+productsRouter.get("/:pid", async (req, res) => {
+	try {
+		const { pid } = req.params;
+		const product = await productManager.getProductById(parseInt(pid));
 
-// Endpoint para crear un nuevo producto
+		if (!product) {
+			return res.status(404).json({ message: "Producto no encontrado" });
+		}
 
-// Endpoint para modificar un producto
+		res.status(200).json(product);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
+// POST /api/products - Agregar un nuevo producto
+productsRouter.post("/", async (req, res) => {
+	try {
+		const { title, description, code, price, status, stock, category, thumbnail } = req.body;
+
+		// Validación básica: asegurarse de que los campos obligatorios estén presentes
+		if (!title || !description || !code || !price || !stock || !category) {
+			return res.status(400).json({ message: "Faltan campos obligatorios" });
+		}
+
+		// Crear el nuevo producto
+		const newProduct = await productManager.addProduct({
+			title,
+			description,
+			code,
+			price,
+			status: status !== undefined ? status : true, // Si no envían status, será true por defecto
+			stock,
+			category,
+			thumbnail: thumbnail || "" // Si no envían imagen, será un string vacío
+		});
+
+		res.status(201).json({ message: "Producto agregado", product: newProduct });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
+// PUT /api/products/:pid - Modificar un producto por su ID
+productsRouter.put("/:pid", async (req, res) => {
+	try {
+		const { pid } = req.params;
+		const updatedFields = req.body;
+
+		// Evitar que se intente modificar el ID
+		if (updatedFields.id) {
+			return res.status(400).json({ message: "No puedes modificar el ID del producto" });
+		}
+
+		const updatedProduct = await productManager.updateProductById(parseInt(pid), updatedFields);
+
+		res.status(200).json({ message: "Producto actualizado", product: updatedProduct });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
+// DELETE /api/products/:pid - Eliminar un producto por su ID
+productsRouter.delete("/:pid", async (req, res) => {
+	try {
+		const { pid } = req.params;
+		await productManager.deleteProductById(parseInt(pid));
+
+		res.status(200).json({ message: `Producto con ID ${pid} eliminado.` });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
 
 // Exporta el router
 export default productsRouter;
