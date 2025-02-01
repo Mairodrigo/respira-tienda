@@ -24,7 +24,6 @@ cartsRouter.post("/", async (req, res) => {
 	}
 });
 
-
 // ✅ GET /api/carts/:cid - Obtener un carrito por ID
 cartsRouter.get("/:cid", async (req, res) => {
 	try {
