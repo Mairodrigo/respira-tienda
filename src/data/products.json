@@ -1,13 +1,24 @@
 [
-  {
-    "id": 1,
-    "title": "Sahumerios florales",
-    "description": "Sahumerios Sagrada Madre con aromas florales. 90 minutos de duracion",
-    "code": "KB123",
-    "price":2500,
-    "status": true,
-    "stock": 15,
-    "category": "Sahumerios",
-    "thumbnail": ""
-  }
+	{
+		"id": 1,
+		"title": "Sahumerios florales",
+		"description": "Sahumerios Sagrada Madre con aromas florales. 90 minutos de duracion",
+		"code": "KB123",
+		"price": 2500,
+		"status": true,
+		"stock": 15,
+		"category": "Sahumerios",
+		"thumbnail": ""
+	},
+	{
+		"id": 2,
+		"title": "Sahumerios florales",
+		"description": "Sahumerios Sagrada Madre con aromas florales. 90 minutos de duracion",
+		"code": "KB123",
+		"price": 2500,
+		"status": true,
+		"stock": 15,
+		"category": "Sahumerios",
+		"thumbnail": ""
+	}
 ]
