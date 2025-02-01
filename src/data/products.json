@@ -1,10 +1,10 @@
 [
 	{
 		"id": 1,
-		"title": "Sahumerios florales",
-		"description": "Sahumerios Sagrada Madre con aromas florales. 90 minutos de duracion",
-		"code": "KB123",
-		"price": 2500,
+		"title": "Sahumerio Sagrado",
+		"description": "Sahumerios Sagrada Madre. 4 blends de aromas para inspirar nuestros rituales e intenciones diarias. Incluye mensaje motivador y guia. Ideal para regalar.",
+		"code": "SMSS04",
+		"price": 2600,
 		"status": true,
 		"stock": 15,
 		"category": "Sahumerios",
@@ -12,13 +12,46 @@
 	},
 	{
 		"id": 2,
-		"title": "Sahumerios florales",
-		"description": "Sahumerios Sagrada Madre con aromas florales. 90 minutos de duracion",
-		"code": "KB123",
+		"title": "Pastillas 7 dias de limpieza",
+		"description": "Pastillas Sagrada Madre. Cada caja contiene 7 unidades. Aromas: sandalo, copal, rosa, romero, calendula y manzanilla, 7 hierbas, yagra e incienso. Una pastilla de limpieza por dia. Ideal para limpieza energetica de hogares.",
+		"code": "SMP7L",
 		"price": 2500,
 		"status": true,
 		"stock": 15,
+		"category": "Pastillas",
+		"thumbnail": ""
+	},
+	{
+		"id": 3,
+		"title": "Kit Herbal",
+		"description": "Kit Sagrada Madre. El kit contiene 4 sahumerios premium de 90 minutos de duracion, 3 bombitas de defumacion, 1 sahumo y 1 pastilla activada. Presentación en caja. Ideal regalos.",
+		"code": "SMKH01",
+		"price": 6300,
+		"status": true,
+		"stock": 15,
+		"category": "Kits",
+		"thumbnail": ""
+	},
+	{
+		"id": 4,
+		"title": "Linea sahumerios de Palo Santo",
+		"description": "Sahumerios Sagrada Madre. Duración premium de 60 minutos. 8 varillas por caja. 16 aromas distintos. Combinación de palo santo con distintos aromas.",
+		"code": "SMSPS",
+		"price": 2000,
+		"status": true,
+		"stock": 15,
 		"category": "Sahumerios",
+		"thumbnail": ""
+	},
+	{
+		"id": 5,
+		"title": "Bombitas 7 chackras",
+		"description": "Bombitas Sagrada Madre. La caja contiene 7 bombitas. Vienen activadas, no hace falta usar carbon.",
+		"code": "SMB7C",
+		"price": 1500,
+		"status": true,
+		"stock": 15,
+		"category": "Bombitas",
 		"thumbnail": ""
 	}
 ]
