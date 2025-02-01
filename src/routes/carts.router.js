@@ -4,6 +4,16 @@ import CartManager from "../managers/CartManager.js";
 const cartsRouter = express.Router();
 const cartManager = new CartManager("./src/data/carts.json");
 
+// ✅ GET /api/carts - Obtener todos los carritos
+cartsRouter.get("/", async (req, res) => {
+	try {
+		const carts = await cartManager.getCarts();
+		res.status(200).json(carts);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
 // ✅ POST /api/carts - Crear un nuevo carrito
 cartsRouter.post("/", async (req, res) => {
 	try {
