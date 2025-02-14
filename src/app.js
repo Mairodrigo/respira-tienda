@@ -1,16 +1,30 @@
 // Librerías necesarias y enrutadores
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import { engine } from "express-handlebars";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
+import viewsRouter from "./routes/views.router.js";
 
 // Instancia de la aplicación de Express
 const app = express();
+// Creacion del servidor de forma explicita
+const server = http.createServer(app);
+//Variable para manejar entrada y salida de websockets
+const io = new Server(server);
+
+//Configuracion handlebars
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", "./src/views");
+
 // Puerto en el que escuchará
 const PORT = 8080;
 // Middleware para procesar datos JSON en las solicitudes
 app.use(express.json());
 
-//Configuración de mensaje de bienvenida
+/* //Configuración de mensaje de bienvenida
 app.get("/", (req, res) => {
 	res.send(`
     <h1>Bienvenido a Respira 🌿</h1>
@@ -34,11 +48,12 @@ app.get("/", (req, res) => {
     </ul>
     <p>Prueba estas rutas en Postman o directamente en el navegador.</p>
 `);
-});
+}); */
 
 // Configuración de rutas principales
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
+app.use("/", viewsRouter);
 
 //Manejo de rutas no encontradas
 app.use((req, res) => {
@@ -46,6 +61,6 @@ app.use((req, res) => {
 });
 
 //Se levanta el servidor
-app.listen(PORT, () => {
+server.listen(PORT, () => {
 	console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });
