@@ -53,5 +53,15 @@
 		"stock": 15,
 		"category": "Bombitas",
 		"thumbnail": ""
+	},
+	{
+		"id": 6,
+		"title": "Linea sahumerios Patagonia",
+		"description": "Sahumerios Sagrada Madre. Calidad deluxe de 90 minutos de duración. 8 varillas por caja.",
+		"code": "SMPa",
+		"price": "2700",
+		"stock": "5",
+		"category": "Sahumerios",
+		"thumbnail": ""
 	}
 ]
