@@ -186,5 +186,4 @@ cartsRouter.delete("/:cid", async (req, res) => {
 	}
 });
 
-
 export default cartsRouter;
