@@ -1,0 +1,24 @@
+<div class="container">
+	<h1>Tu Carrito</h1>
+	{{#if cart.products.length}}
+		<ul>
+			{{#each cart.products}}
+				<li>
+					<strong>{{this.productId.title}}</strong>
+					- ${{this.productId.price}}
+					- Cantidad:
+					{{this.quantity}}
+					<button
+						class="btn remove-from-cart"
+						data-id="{{this.productId._id}}"
+					>Eliminar</button>
+				</li>
+			{{/each}}
+		</ul>
+	{{else}}
+		<p>El carrito está vacío.</p>
+	{{/if}}
+	<a href="/" class="btn">Volver</a>
+</div>
+
+<script src="/js/cart.js"></script>

@@ -12,10 +12,10 @@ const productSchema = new mongoose.Schema({
 	thumbnail: { type: String, default: "" },
 });
 
-//Variable
-const Product = mongoose.model("Product", productSchema);
-
-// Paginación
+//Aplicar paginación
 productSchema.plugin(mongoosePaginate);
+
+// Modelo con paginación
+const Product = mongoose.model("Product", productSchema);
 
 export default Product;

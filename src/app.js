@@ -1,6 +1,6 @@
 import express from "express";
 import http from "http";
-import mongoose from "mongoose";
+import connectMongoDB from "./config/mongoose.config.js"
 import dotenv from "dotenv";
 import { Server } from "socket.io";
 import { engine } from "express-handlebars";
@@ -9,26 +9,14 @@ import cartsRouter from "./routes/carts.router.js";
 import viewsRouter from "./routes/views.router.js";
 import ProductManager from "./managers/ProductManager.js";
 
-dotenv.config();
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 8080;
 
-// Conexión a MongoDB Atlas
-const mongoURI = process.env.MONGO_URI; // Obtener la URI desde el .env
-
-const connectMongoDB = async () => {
-	try {
-		await mongoose.connect(mongoURI);
-		console.log("Conectado a MongoDB");
-	} catch (error) {
-		console.error("Error en la conexión a MongoDB:", error.message);
-		process.exit(1); // Cierra la app si falla la conexión
-	}
-};
-connectMongoDB();
+//Mongo
+dotenv.config();
+connectMongoDB ();
 
 // Configuración de Handlebars
 app.engine("handlebars", engine());
