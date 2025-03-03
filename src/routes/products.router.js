@@ -1,92 +1,169 @@
 import express from "express";
-import ProductManager from "../managers/ProductManager.js";
+import Product from "../models/Product.model.js";
 
 const productsRouter = express.Router();
-const productManager = new ProductManager("./src/data/products.json");
 
-//GET /api/products - Listar todos los productos
+// ✅ GET /api/products - Obtener productos con filtros, paginación y ordenamiento
 productsRouter.get("/", async (req, res) => {
 	try {
-		//Recupera los productos del archivo products.json
-		const data = await productManager.getProducts();
-		res.status(200).send(data);
+		const { limit = 10, page = 1, sort, query } = req.query;
+
+		// 📌 Filtros dinámicos
+		const filter = {};
+		if (query) {
+			if (query === "available") filter.status = true;
+			else filter.category = query;
+		}
+
+		// 📌 Opciones de paginación
+		const options = {
+			page: parseInt(page),
+			limit: parseInt(limit),
+			sort:
+				sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {},
+		};
+
+		// 📌 Obtener productos con paginación
+		const products = await Product.paginate(filter, options);
+
+		res.json({
+			status: "success",
+			payload: products.docs,
+			totalPages: products.totalPages,
+			prevPage: products.prevPage || null,
+			nextPage: products.nextPage || null,
+			page: products.page,
+			hasPrevPage: products.hasPrevPage,
+			hasNextPage: products.hasNextPage,
+			prevLink: products.hasPrevPage
+				? `/api/products?page=${products.prevPage}&limit=${limit}${
+						sort ? `&sort=${sort}` : ""
+				}${query ? `&query=${query}` : ""}`
+				: null,
+			nextLink: products.hasNextPage
+				? `/api/products?page=${products.nextPage}&limit=${limit}${
+						sort ? `&sort=${sort}` : ""
+				}${query ? `&query=${query}` : ""}`
+				: null,
+		});
 	} catch (error) {
-		res.status(500).send({ message: error.massage });
+		res.status(500).json({ status: "error", message: error.message });
 	}
 });
 
-// GET /api/products/:pid - Obtener un producto por su ID
+// ✅ GET /api/products/:pid - Obtener un producto por su ID
 productsRouter.get("/:pid", async (req, res) => {
 	try {
 		const { pid } = req.params;
-		const product = await productManager.getProductById(parseInt(pid));
+		const product = await Product.findById(pid);
 
 		if (!product) {
-			return res.status(404).json({ message: "Producto no encontrado" });
+			return res
+				.status(404)
+				.json({ status: "error", message: "Producto no encontrado" });
 		}
 
-		res.status(200).json(product);
+		res.status(200).json({ status: "success", payload: product });
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(500).json({ status: "error", message: error.message });
 	}
 });
 
-// POST /api/products - Agregar un nuevo producto
+// ✅ POST /api/products - Agregar un nuevo producto
 productsRouter.post("/", async (req, res) => {
 	try {
-		const { title, description, code, price, status, stock, category, thumbnail } = req.body;
-
-		// Validación básica: asegurarse de que los campos obligatorios estén presentes
-		if (!title || !description || !code || !price || !stock || !category) {
-			return res.status(400).json({ message: "Faltan campos obligatorios" });
-		}
-
-		// Crear el nuevo producto
-		const newProduct = await productManager.addProduct({
+		const {
 			title,
 			description,
 			code,
 			price,
-			status: status !== undefined ? status : true, 
+			status,
 			stock,
 			category,
-			thumbnail: thumbnail || "" 
+			thumbnail,
+		} = req.body;
+
+		// Validación de campos obligatorios
+		if (!title || !description || !code || !price || !stock || !category) {
+			return res
+				.status(400)
+				.json({ status: "error", message: "Faltan campos obligatorios" });
+		}
+
+		// Crear el nuevo producto
+		const newProduct = await Product.create({
+			title,
+			description,
+			code,
+			price,
+			status: status !== undefined ? status : true,
+			stock,
+			category,
+			thumbnail: thumbnail || "",
 		});
 
-		res.status(201).json({ message: "Producto agregado", product: newProduct });
+		res.status(201).json({
+			status: "success",
+			message: "Producto agregado",
+			payload: newProduct,
+		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(500).json({ status: "error", message: error.message });
 	}
 });
 
-// PUT /api/products/:pid - Modificar un producto por su ID
+// ✅ PUT /api/products/:pid - Modificar un producto por su ID
 productsRouter.put("/:pid", async (req, res) => {
 	try {
 		const { pid } = req.params;
 		const updatedFields = req.body;
 
-		// Evitar que se intente modificar el ID
+		// Evitar que se modifique el ID
 		if (updatedFields.id) {
-			return res.status(400).json({ message: "No puedes modificar el ID del producto" });
+			return res.status(400).json({
+				status: "error",
+				message: "No puedes modificar el ID del producto",
+			});
 		}
 
-		const updatedProduct = await productManager.updateProductById(parseInt(pid), updatedFields);
+		const updatedProduct = await Product.findByIdAndUpdate(pid, updatedFields, {
+			new: true,
+		});
 
-		res.status(200).json({ message: "Producto actualizado", product: updatedProduct });
+		if (!updatedProduct) {
+			return res
+				.status(404)
+				.json({ status: "error", message: "Producto no encontrado" });
+		}
+
+		res.status(200).json({
+			status: "success",
+			message: "Producto actualizado",
+			payload: updatedProduct,
+		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(500).json({ status: "error", message: error.message });
 	}
 });
 
-// DELETE /api/products/:pid - Eliminar un producto por su ID
+// ✅ DELETE /api/products/:pid - Eliminar un producto por su ID
 productsRouter.delete("/:pid", async (req, res) => {
 	try {
 		const { pid } = req.params;
-		await productManager.deleteProductById(parseInt(pid));
+		const deletedProduct = await Product.findByIdAndDelete(pid);
 
-		res.status(200).json({ message: `Producto con ID ${pid} eliminado.` });
+		if (!deletedProduct) {
+			return res
+				.status(404)
+				.json({ status: "error", message: "Producto no encontrado" });
+		}
+
+		res.status(200).json({
+			status: "success",
+			message: `Producto con ID ${pid} eliminado.`,
+		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(500).json({ status: "error", message: error.message });
 	}
 });
 
