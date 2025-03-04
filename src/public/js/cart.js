@@ -1,40 +1,33 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+	let cartId = localStorage.getItem("cartId");
+
+	// Si no hay carrito, crearlo
+	if (!cartId) {
+		const response = await fetch("/api/carts", { method: "POST" });
+		const data = await response.json();
+		cartId = data.cart._id; // Guardar el nuevo ID
+		localStorage.setItem("cartId", cartId);
+	}
+
 	document.querySelectorAll(".add-to-cart").forEach((button) => {
 		button.addEventListener("click", async () => {
 			const productId = button.getAttribute("data-id");
 
 			const response = await fetch(
-				`/api/carts/662fa1b54f1aef0012d3e8b7/products/${productId}`,
+				`/api/carts/${cartId}/products/${productId}`,
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 				}
 			);
 
+			const result = await response.json();
+			console.log("Respuesta del servidor:", result);
+
 			if (response.ok) {
 				alert("Producto agregado al carrito");
 			} else {
-				alert("Error al agregar producto");
-			}
-		});
-	});
-
-	document.querySelectorAll(".remove-from-cart").forEach((button) => {
-		button.addEventListener("click", async () => {
-			const productId = button.getAttribute("data-id");
-
-			const response = await fetch(
-				`/api/carts/662fa1b54f1aef0012d3e8b7/products/${productId}`,
-				{
-					method: "DELETE",
-				}
-			);
-
-			if (response.ok) {
-				alert("Producto eliminado del carrito");
-				window.location.reload();
-			} else {
-				alert("Error al eliminar producto");
+				alert("Error al agregar producto: " + result.message);
 			}
 		});
 	});
