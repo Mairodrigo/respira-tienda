@@ -38,7 +38,7 @@ productsRouter.get("/", async (req, res) => {
 			prevLink: products.hasPrevPage
 				? `/api/products?page=${products.prevPage}&limit=${limit}${
 						sort ? `&sort=${sort}` : ""
-				  }${query ? `&query=${query}` : ""}`
+				}${query ? `&query=${query}` : ""}`
 				: null,
 			nextLink: products.hasNextPage
 				? `/api/products?page=${products.nextPage}&limit=${limit}${
