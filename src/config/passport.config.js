@@ -1,7 +1,7 @@
 import passport from "passport";
 import local from "passport-local";
 import User from "../models/User.model.js";
-import { hashPassword, comparePassword } from "../utils/encryption.js";
+import { createHash, isValidPassword } from "../utils/encryption.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -19,7 +19,7 @@ const initializePassport = () => {
 					if (existingUser)
 						return done(null, false, { message: "El usuario ya existe" });
 
-					const hashedPassword = hashPassword(password);
+					const hashedPassword = createHash(password);
 					const newUser = await User.create({
 						first_name,
 						last_name,
@@ -47,7 +47,7 @@ const initializePassport = () => {
 					if (!user)
 						return done(null, false, { message: "Usuario no encontrado" });
 
-					const isPasswordValid = comparePassword(password, user.password);
+					const isPasswordValid = isValidPassword(password, user.password);
 					if (!isPasswordValid)
 						return done(null, false, { message: "Contraseña incorrecta" });
 
