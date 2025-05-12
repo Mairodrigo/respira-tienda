@@ -8,8 +8,15 @@
 				<p>{{this.description}}</p>
 				<p><strong>Precio:</strong> ${{this.price}}</p>
 				<a href="/products/{{this._id}}" class="btn">Ver Detalles</a>
-				<button class="btn add-to-cart" data-id="{{this._id}}">Agregar al
-					Carrito</button>
+
+				{{!-- Botón que ahora incluye el ID del producto y del carrito --}}
+				<button
+					class="btn add-to-cart"
+					data-id="{{this._id}}"
+					data-cart-id="{{../cartId}}"
+				>
+					Agregar al Carrito
+				</button>
 			</div>
 		{{/each}}
 	</div>
@@ -26,4 +33,5 @@
 	</div>
 </div>
 
+{{!-- Incluimos script para manejar el "Agregar al carrito" --}}
 <script src="/js/cart.js"></script>

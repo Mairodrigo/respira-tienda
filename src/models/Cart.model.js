@@ -1,19 +1,27 @@
 import mongoose from "mongoose";
 
-const cartSchema = new mongoose.Schema({
-	products: [
-		{
-			productId: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "Product",
-				required: true,
+// Esquema del carrito
+const cartSchema = new mongoose.Schema(
+	{
+		products: [
+			{
+				productId: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "Product", // Referencia al modelo de producto
+					required: true,
+				},
+				quantity: {
+					type: Number,
+					default: 1,
+					min: [1, "La cantidad debe ser al menos 1"],
+				},
 			},
-			quantity: { type: Number, default: 1 },
-		},
-	],
-});
+		],
+	},
+	{ timestamps: true } // Añade createdAt y updatedAt
+);
 
-const Cart = mongoose.model("Cart", cartSchema);
+// Evita redefinir el modelo si ya existe
+const Cart = mongoose.models.Cart || mongoose.model("Cart", cartSchema);
 
-// Exportar el modelo de carrito
-export default Cart
+export default Cart;

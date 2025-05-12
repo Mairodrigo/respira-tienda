@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
 		},
 		cart: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Cart", // nombre del modelo de carrito
+			ref: "Cart", // Referencia al modelo de carrito
 		},
 		role: {
 			type: String,
@@ -43,24 +43,24 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-// Encriptar la contraseña antes de guardarla
+// Middleware que encripta la contraseña antes de guardar
 userSchema.pre("save", async function (next) {
-	if (!this.isModified("password")) return next();
+	if (!this.isModified("password")) return next(); // Evita rehashear si no fue modificada
 
 	try {
-		this.password = await bcrypt.hash(this.password, 10);
-		next();
+		this.password = await bcrypt.hash(this.password, 10); // Encripta
+		next(); // Continúa el guardado
 	} catch (error) {
-		next(error);
+		next(error); // Pasa error a Express si falla
 	}
 });
 
-// Métodos para comparar contraseñas
+// Método de instancia para comparar contraseñas
 userSchema.methods.isValidPassword = async function (password) {
 	return bcrypt.compare(password, this.password);
 };
 
-// Verifica si el modelo ya está definido
+// Evita redefinir el modelo si ya fue declarado (útil en dev o testing)
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
