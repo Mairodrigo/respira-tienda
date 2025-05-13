@@ -1,12 +1,22 @@
 import bcrypt from "bcrypt";
 
-// Encriptar contraseña
-export const createHash = (plainPassword) => {
-	const saltRounds = 10;
-	return bcrypt.hashSync(plainPassword, saltRounds);
+const SALT_ROUNDS = 10;
+
+/**
+ * Encripta una contraseña en texto plano usando bcrypt.
+ * @param {string} plainPassword - Contraseña sin encriptar
+ * @returns {Promise<string>} - Contraseña hasheada
+ */
+export const createHash = async (plainPassword) => {
+	return await bcrypt.hash(plainPassword, SALT_ROUNDS);
 };
 
-// Verificar contraseña
-export const isValidPassword = (plainPassword, hashedPassword) => {
-	return bcrypt.compareSync(plainPassword, hashedPassword);
+/**
+ * Compara una contraseña en texto plano con un hash.
+ * @param {string} plainPassword - Contraseña que ingresa el usuario
+ * @param {string} hashedPassword - Hash guardado en la base de datos
+ * @returns {Promise<boolean>} - true si coinciden
+ */
+export const isValidPassword = async (plainPassword, hashedPassword) => {
+	return await bcrypt.compare(plainPassword, hashedPassword);
 };

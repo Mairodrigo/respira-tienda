@@ -1,4 +1,5 @@
 import express from "express";
+import { authToken } from "../middlewares/authToken.js"; // Middleware para verificar que el usuario esté autenticado
 import {
 	createCart,
 	addProductToCart,
@@ -11,8 +12,14 @@ import {
 
 const cartsRouter = express.Router();
 
+// Ruta para crear un carrito
 cartsRouter.post("/", createCart);
-cartsRouter.post("/:cid/products/:pid", addProductToCart);
+
+// Ruta para agregar un producto al carrito
+// Se añade el middleware authToken para garantizar que solo usuarios autenticados puedan agregar productos
+cartsRouter.post("/:cid/products/:pid", authToken, addProductToCart);
+
+// Resto de rutas para manejar el carrito
 cartsRouter.get("/:cid", getCartById);
 cartsRouter.put("/:cid", updateCart);
 cartsRouter.put("/:cid/products/:pid", updateProductQuantity);

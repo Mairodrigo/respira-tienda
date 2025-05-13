@@ -1,51 +1,58 @@
-import User from "../models/User.model.js";
 import { generateToken } from "../utils/jwt.js";
-import { isValidPassword } from "../utils/hash.js";
+import UserService from "../services/User.service.js";
+import UserDTO from "../dto/User.dto.js";
 
-// Registro con passport (función post-authenticación)
+// Registro con Passport
 export const registerSuccess = (req, res) => {
+	const { first_name, last_name, email, role, _id } = req.user;
+	const token = generateToken({ _id, email, role, first_name, last_name });
+
 	res.status(201).json({
 		status: "success",
 		message: "Usuario registrado con éxito",
-		payload: req.user,
+		token,
 	});
 };
 
-// Login con validación manual y JWT
-export const loginUser = async (req, res) => {
-	const { email, password } = req.body;
+// Login con Passport
+export const loginSuccess = (req, res) => {
+	const { first_name, last_name, email, role, _id } = req.user;
+	const token = generateToken({ _id, email, role, first_name, last_name });
 
+	res.status(200).json({
+		status: "success",
+		message: "Login exitoso",
+		token,
+	});
+};
+
+// Endpoint protegido que usa DTO
+export const getCurrentUser = async (req, res) => {
 	try {
-		const user = await User.findOne({ email });
-
-		if (!user || !isValidPassword(password, user.password)) {
-			return res.status(401).json({
+		const user = await UserService.getById(req.user._id);
+		if (!user) {
+			return res.status(404).json({
 				status: "error",
-				message: "Credenciales inválidas",
+				message: "Usuario no encontrado",
 			});
 		}
 
-		const userPayload = {
-			_id: user._id,
-			email: user.email,
-			role: user.role,
-			first_name: user.first_name,
-			last_name: user.last_name,
-		};
-
-		const token = generateToken(userPayload);
+		const safeUser = new UserDTO(user);
 
 		res.status(200).json({
 			status: "success",
-			message: "Login exitoso",
-			token,
+			user: safeUser,
 		});
 	} catch (error) {
-		res.status(500).json({ status: "error", message: error.message });
+		console.error("Error en /current:", error);
+		res.status(500).json({
+			status: "error",
+			message: "Error interno del servidor",
+		});
 	}
 };
 
-// Fallo de registro
+// Fallos
 export const failRegister = (req, res) => {
 	res.status(400).json({
 		status: "error",
@@ -53,7 +60,6 @@ export const failRegister = (req, res) => {
 	});
 };
 
-// Fallo de login
 export const failLogin = (req, res) => {
 	res.status(401).json({
 		status: "error",

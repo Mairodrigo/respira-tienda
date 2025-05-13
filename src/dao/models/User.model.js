@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-// Definición del esquema del modelo de usuario
+// Número de rondas de salt configurables por si querés moverlo a .env
+const SALT_ROUNDS = 10;
+
+// Esquema del modelo de usuario
 const userSchema = new mongoose.Schema(
 	{
 		first_name: {
@@ -20,19 +23,21 @@ const userSchema = new mongoose.Schema(
 			required: true,
 			lowercase: true,
 			trim: true,
+			match: [/\S+@\S+\.\S+/, "Formato de email inválido"],
 		},
 		age: {
 			type: Number,
 			required: true,
-			min: 0,
+			min: [0, "La edad no puede ser negativa"],
 		},
 		password: {
 			type: String,
 			required: true,
+			select: false, // Excluye el password por defecto en los .find() si no se pide explícitamente
 		},
 		cart: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Cart", // Referencia al modelo de carrito
+			ref: "Cart",
 		},
 		role: {
 			type: String,
@@ -43,24 +48,24 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-// Middleware que encripta la contraseña antes de guardar
+// Hash de contraseña antes de guardar
 userSchema.pre("save", async function (next) {
-	if (!this.isModified("password")) return next(); // Evita rehashear si no fue modificada
+	if (!this.isModified("password")) return next();
 
 	try {
-		this.password = await bcrypt.hash(this.password, 10); // Encripta
-		next(); // Continúa el guardado
+		const hashedPassword = await bcrypt.hash(this.password, SALT_ROUNDS);
+		this.password = hashedPassword;
+		next();
 	} catch (error) {
-		next(error); // Pasa error a Express si falla
+		next(error);
 	}
 });
 
-// Método de instancia para comparar contraseñas
-userSchema.methods.isValidPassword = async function (password) {
-	return bcrypt.compare(password, this.password);
+// Método para comparar contraseñas
+userSchema.methods.isValidPassword = async function (plainPassword) {
+	return bcrypt.compare(plainPassword, this.password);
 };
 
-// Evita redefinir el modelo si ya fue declarado (útil en dev o testing)
+// Export del modelo, evitando redefinir en dev
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-
 export default User;

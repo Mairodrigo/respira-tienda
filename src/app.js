@@ -1,39 +1,63 @@
+// --------------------
+// 1. IMPORTS EXTERNOS
+// --------------------
 import express from "express";
 import http from "http";
-import connectMongoDB from "./config/mongoose.config.js";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
-import { engine } from "express-handlebars";
-import productsRouter from "./routes/products.router.js";
-import cartsRouter from "./routes/carts.router.js";
-import viewsRouter from "./routes/views.router.js";
-import sessionsRouter from "./routes/sessions.router.js";
-import ProductManager from "./managers/ProductManager.js";
 import session from "express-session";
 import passport from "passport";
-import initializePassport from "./config/passport.config.js";
+import { engine } from "express-handlebars";
+import path from "path";
 
+// --------------------
+// 2. IMPORTS INTERNOS
+// --------------------
+import connectMongoDB from "./config/mongoose.config.js";
+import initializePassport from "./config/passport.config.js";
+import productsRouter from "./routes/products.router.js";
+import cartsRouter from "./routes/carts.router.js";
+import usersRouter from "./routes/users.router.js"; // ✅ nueva importación
+import viewsRouter from "./routes/views.router.js";
+import ProductManager from "./managers/ProductManager.js";
+import setupSocket from "./sockets/products.socket.js";
+import passwordRouter from "./routes/password.router.js";
+// --------------------
+// 3. CONFIGURACIÓN INICIAL
+// --------------------
 dotenv.config();
+
+if (!process.env.SESSION_SECRET) {
+	throw new Error("Falta definir SESSION_SECRET en el archivo .env");
+}
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 8080;
 
-// Conexión a Mongo
+// --------------------
+// 4. CONEXIÓN A MONGO
+// --------------------
 connectMongoDB();
 
-// Configuración de Handlebars
+// --------------------
+// 5. CONFIGURACIÓN HANDLEBARS
+// --------------------
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
-app.set("views", "./src/views");
+app.set("views", path.resolve("src", "views"));
 
-// Middlewares básicos
+// --------------------
+// 6. MIDDLEWARES GENERALES
+// --------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("src/public"));
+app.use(express.static(path.resolve("src", "public")));
 
-// Session y Passport deben ir antes de las rutas
+// --------------------
+// 7. SESSION + PASSPORT
+// --------------------
 app.use(
 	session({
 		secret: process.env.SESSION_SECRET,
@@ -46,49 +70,34 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Rutas
+// --------------------
+// 8. RUTAS
+// --------------------
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
-app.use("/api/sessions", sessionsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/auth", passwordRouter);
 app.use("/", viewsRouter);
 
-// WebSockets
+// --------------------
+// 9. WEBSOCKETS
+// --------------------
 const productManager = new ProductManager();
+setupSocket(io, productManager);
 
-io.on("connection", (socket) => {
-	console.log("Cliente conectado");
-
-	socket.on("newProduct", async (productData) => {
-		try {
-			await productManager.addProduct(productData);
-			const products = await productManager.getProducts();
-			io.emit("updateProducts", products);
-		} catch (error) {
-			console.error("Error al añadir el producto:", error.message);
-		}
-	});
-
-	socket.on("deleteProduct", async (id) => {
-		try {
-			await productManager.deleteProductById(id);
-			const products = await productManager.getProducts();
-			io.emit("updateProducts", products);
-		} catch (error) {
-			console.error("Error al eliminar el producto:", error.message);
-		}
-	});
-
-	socket.on("disconnect", () => {
-		console.log("Cliente desconectado");
-	});
-});
-
-// Middleware para rutas no encontradas (si nada de lo anterior hizo match)
+// --------------------
+// 10. 404 HANDLER
+// --------------------
 app.use((req, res) => {
+	if (req.accepts("html")) {
+		return res.status(404).render("404", { url: req.originalUrl });
+	}
 	res.status(404).json({ error: "Ruta no encontrada" });
 });
 
-// Levantar el servidor
+// --------------------
+// 11. LEVANTAR SERVIDOR
+// --------------------
 server.listen(PORT, () => {
 	console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });

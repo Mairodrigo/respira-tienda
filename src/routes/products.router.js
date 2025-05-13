@@ -1,7 +1,6 @@
 import express from "express";
+import { roleAuthorization } from "../middlewares/roleAuthorization.js";
 import {
-	getProducts,
-	getProductById,
 	createProduct,
 	updateProduct,
 	deleteProduct,
@@ -9,10 +8,25 @@ import {
 
 const productsRouter = express.Router();
 
-productsRouter.get("/", getProducts);
-productsRouter.get("/:pid", getProductById);
-productsRouter.post("/", createProduct);
-productsRouter.put("/:pid", updateProduct);
-productsRouter.delete("/:pid", deleteProduct);
+// Ruta solo para administradores
+productsRouter.post(
+	"/create",
+	roleAuthorization(["admin"]), // Solo acceso para admin
+	createProduct
+);
+
+// Ruta solo para administradores
+productsRouter.put(
+	"/update/:id",
+	roleAuthorization(["admin"]), // Solo acceso para admin
+	updateProduct
+);
+
+// Ruta solo para administradores
+productsRouter.delete(
+	"/delete/:id",
+	roleAuthorization(["admin"]), // Solo acceso para admin
+	deleteProduct
+);
 
 export default productsRouter;

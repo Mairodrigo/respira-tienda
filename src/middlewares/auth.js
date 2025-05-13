@@ -1,39 +1,45 @@
+// src/middlewares/auth.js
+
 import { verifyToken } from "../utils/jwt.js";
 
-// Middleware para verificar que el usuario tenga un token válido
+/**
+ * Middleware para verificar la validez del token JWT en rutas protegidas.
+ * Extrae el token del header "Authorization" y, si es válido,
+ * adjunta el usuario decodificado a req.user.
+ */
 export const authToken = (req, res, next) => {
 	const authHeader = req.headers.authorization;
 
-	// Validar que exista la cabecera Authorization
+	// Verificar presencia y formato correcto del header
 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
 		return res.status(401).json({
 			status: "error",
-			message: "Token no enviado o formato incorrecto",
+			message:
+				"Token no enviado o formato incorrecto. Se espera 'Bearer <token>'",
 		});
 	}
 
-	// Extraer el token del encabezado
 	const token = authHeader.split(" ")[1];
 
 	try {
-		// Verificar la validez del token
 		const decodedUser = verifyToken(token);
 
-		// Si no hay payload válido, se rechaza
-		if (!decodedUser || typeof decodedUser !== "object") {
+		// Validar el contenido del token
+		if (!decodedUser || typeof decodedUser !== "object" || !decodedUser.email) {
 			return res.status(403).json({
 				status: "error",
-				message: "Token inválido",
+				message: "Token inválido: contenido incorrecto",
 			});
 		}
 
-		// Agregar el usuario al request para usar en la ruta protegida
+		// Asignar usuario al objeto request
 		req.user = decodedUser;
 
-		// Continuar con la ejecución del endpoint
+		// Pasar al siguiente middleware o controlador
 		next();
 	} catch (error) {
 		console.error("❌ Error al verificar token:", error.message);
+
 		return res.status(403).json({
 			status: "error",
 			message: "Token inválido o expirado",

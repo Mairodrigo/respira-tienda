@@ -1,12 +1,14 @@
+// src/config/passport.config.js
+
 import passport from "passport";
 import local from "passport-local";
-import User from "../models/User.model.js";
+import User from "../dao/models/User.model.js";
 import { createHash, isValidPassword } from "../utils/encryption.js";
 
 const LocalStrategy = local.Strategy;
 
 const initializePassport = () => {
-	// Registro
+	// Estrategia de registro
 	passport.use(
 		"register",
 		new LocalStrategy(
@@ -16,10 +18,12 @@ const initializePassport = () => {
 					const { first_name, last_name, age } = req.body;
 
 					const existingUser = await User.findOne({ email });
-					if (existingUser)
+					if (existingUser) {
 						return done(null, false, { message: "El usuario ya existe" });
+					}
 
-					const hashedPassword = createHash(password);
+					const hashedPassword = await createHash(password);
+
 					const newUser = await User.create({
 						first_name,
 						last_name,
@@ -36,7 +40,7 @@ const initializePassport = () => {
 		)
 	);
 
-	// Login
+	// Estrategia de login
 	passport.use(
 		"login",
 		new LocalStrategy(
@@ -44,12 +48,17 @@ const initializePassport = () => {
 			async (email, password, done) => {
 				try {
 					const user = await User.findOne({ email });
-					if (!user)
+					if (!user) {
 						return done(null, false, { message: "Usuario no encontrado" });
+					}
 
-					const isPasswordValid = isValidPassword(password, user.password);
-					if (!isPasswordValid)
+					const isPasswordValid = await isValidPassword(
+						password,
+						user.password
+					);
+					if (!isPasswordValid) {
 						return done(null, false, { message: "Contraseña incorrecta" });
+					}
 
 					return done(null, user);
 				} catch (error) {
@@ -59,15 +68,17 @@ const initializePassport = () => {
 		)
 	);
 
-	// Serialización
 	passport.serializeUser((user, done) => {
 		done(null, user._id);
 	});
 
-	// Deserialización
 	passport.deserializeUser(async (id, done) => {
-		const user = await User.findById(id);
-		done(null, user);
+		try {
+			const user = await User.findById(id);
+			done(null, user);
+		} catch (error) {
+			done(error);
+		}
 	});
 };
 

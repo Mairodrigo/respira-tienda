@@ -1,5 +1,5 @@
 // controllers/products.controller.js
-import Product from "../models/Product.model.js";
+import Product from "../dao/models/Product.model.js";
 
 // GET /api/products
 export const getProducts = async (req, res) => {
@@ -95,13 +95,11 @@ export const createProduct = async (req, res) => {
 			thumbnail: thumbnail || "",
 		});
 
-		res
-			.status(201)
-			.json({
-				status: "success",
-				message: "Producto agregado",
-				payload: newProduct,
-			});
+		res.status(201).json({
+			status: "success",
+			message: "Producto agregado",
+			payload: newProduct,
+		});
 	} catch (error) {
 		res.status(500).json({ status: "error", message: error.message });
 	}
@@ -114,12 +112,10 @@ export const updateProduct = async (req, res) => {
 		const updatedFields = req.body;
 
 		if (updatedFields.id) {
-			return res
-				.status(400)
-				.json({
-					status: "error",
-					message: "No puedes modificar el ID del producto",
-				});
+			return res.status(400).json({
+				status: "error",
+				message: "No puedes modificar el ID del producto",
+			});
 		}
 
 		const updatedProduct = await Product.findByIdAndUpdate(pid, updatedFields, {
@@ -132,13 +128,11 @@ export const updateProduct = async (req, res) => {
 				.json({ status: "error", message: "Producto no encontrado" });
 		}
 
-		res
-			.status(200)
-			.json({
-				status: "success",
-				message: "Producto actualizado",
-				payload: updatedProduct,
-			});
+		res.status(200).json({
+			status: "success",
+			message: "Producto actualizado",
+			payload: updatedProduct,
+		});
 	} catch (error) {
 		res.status(500).json({ status: "error", message: error.message });
 	}
@@ -156,12 +150,10 @@ export const deleteProduct = async (req, res) => {
 				.json({ status: "error", message: "Producto no encontrado" });
 		}
 
-		res
-			.status(200)
-			.json({
-				status: "success",
-				message: `Producto con ID ${pid} eliminado.`,
-			});
+		res.status(200).json({
+			status: "success",
+			message: `Producto con ID ${pid} eliminado.`,
+		});
 	} catch (error) {
 		res.status(500).json({ status: "error", message: error.message });
 	}
