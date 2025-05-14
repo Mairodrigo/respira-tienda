@@ -1,6 +1,6 @@
 // controllers/views.controller.js
-import Product from "../dao/models/Product.model.js";
-import Cart from "../dao/models/Cart.model.js";
+import Product from "../models/Product.model.js";
+import Cart from "../models/Cart.model.js";
 
 // GET /
 export const renderHome = async (req, res) => {

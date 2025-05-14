@@ -1,5 +1,5 @@
 // controllers/products.controller.js
-import Product from "../dao/models/Product.model.js";
+import Product from "../models/Product.model.js";
 
 // GET /api/products
 export const getProducts = async (req, res) => {

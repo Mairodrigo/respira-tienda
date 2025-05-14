@@ -1,16 +1,19 @@
+// src/controllers/password.controller.js
+
 import User from "../models/User.model.js";
-import { generateResetToken } from "../utils/resetJwt.js";
+import { generateResetToken, verifyResetToken } from "../utils/jwt.js";
 import { sendResetPasswordEmail } from "../services/email.service.js";
-import { verifyResetToken } from "../utils/resetJwt.js";
-import { createHash, isValidPassword } from "../utils/hash.js";
+import { createHash, isValidPassword } from "../utils/encryption.js";
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173"; // o donde tengas tu frontend
-
-export const forgotPassword = async (req, res) => {
+/**
+ * POST /api/auth/request-reset
+ * Recibe un email y envía un enlace de recuperación si existe el usuario.
+ */
+export const requestPasswordReset = async (req, res) => {
 	try {
 		const { email } = req.body;
-
 		if (!email) {
 			return res
 				.status(400)
@@ -18,8 +21,8 @@ export const forgotPassword = async (req, res) => {
 		}
 
 		const user = await User.findOne({ email });
+		// Para evitar enumeración de correos, siempre devolvemos éxito
 		if (!user) {
-			// No revelar que el usuario no existe (por seguridad)
 			return res.status(200).json({
 				status: "success",
 				message:
@@ -27,13 +30,16 @@ export const forgotPassword = async (req, res) => {
 			});
 		}
 
-		// Generar token que expira en 1 hora
-		const resetToken = generateResetToken({ email: user.email });
+		// Generar token de recuperación con expiración de 1 hora
+		const resetToken = generateResetToken(
+			{ _id: user._id, email: user.email },
+			"1h"
+		);
 
-		// Crear link con token
+		// Construir link para el frontend
 		const resetLink = `${FRONTEND_URL}/reset-password?token=${resetToken}`;
 
-		// Enviar email
+		// Enviar correo
 		await sendResetPasswordEmail(user.email, resetLink);
 
 		return res.status(200).json({
@@ -42,66 +48,80 @@ export const forgotPassword = async (req, res) => {
 				"Si el email está registrado, recibirás un enlace de recuperación",
 		});
 	} catch (error) {
-		console.error("Error en forgotPassword:", error.message);
-		res
+		console.error("Error en requestPasswordReset:", error);
+		return res
 			.status(500)
 			.json({
 				status: "error",
-				message: "Error al enviar el email de recuperación",
+				message: "Error al enviar el correo de recuperación",
 			});
 	}
 };
 
+/**
+ * POST /api/auth/reset-password
+ * Recibe token y nueva contraseña, la valida y la actualiza si es diferente.
+ */
 export const resetPassword = async (req, res) => {
 	try {
 		const { token, newPassword } = req.body;
-
 		if (!token || !newPassword) {
 			return res
 				.status(400)
 				.json({ status: "error", message: "Faltan campos requeridos" });
 		}
 
-		// Verificar token
-		let decoded;
+		// Verificar y decodificar el token
+		let payload;
 		try {
-			decoded = verifyResetToken(token);
+			payload = verifyResetToken(token);
 		} catch (err) {
 			return res
-				.status(401)
+				.status(400)
 				.json({ status: "error", message: "Token inválido o expirado" });
 		}
 
-		const user = await User.findOne({ email: decoded.email });
+		const user = await User.findById(payload._id).select("+password");
 		if (!user) {
 			return res
 				.status(404)
 				.json({ status: "error", message: "Usuario no encontrado" });
 		}
 
-		// Evitar reutilización de contraseña
-		const samePassword = await isValidPassword(newPassword, user.password);
-		if (samePassword) {
-			return res
-				.status(400)
-				.json({
-					status: "error",
-					message: "No puedes usar la misma contraseña anterior",
-				});
+		// Evitar reutilización de la misma contraseña
+		const same = await isValidPassword(newPassword, user.password);
+		if (same) {
+			return res.status(400).json({
+				status: "error",
+				message: "La nueva contraseña no puede ser igual a la anterior",
+			});
 		}
 
-		// Encriptar y guardar
-		user.password = createHash(newPassword);
+		// Hash de la nueva contraseña y guardado
+		user.password = await createHash(newPassword);
 		await user.save();
 
-		res.status(200).json({
+		return res.status(200).json({
 			status: "success",
 			message: "Contraseña restablecida correctamente",
 		});
 	} catch (error) {
-		console.error("Error en resetPassword:", error.message);
-		res
+		console.error("Error en resetPassword:", error);
+		return res
 			.status(500)
 			.json({ status: "error", message: "Error al restablecer la contraseña" });
 	}
 };
+
+/**
+ * GET /reset-password
+ * Muestra un formulario para ingresar la nueva contraseña.
+ */
+export const renderResetForm = (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(400).send("Token es obligatorio");
+    }
+    // Renderizamos la vista y pasamos el token oculto al formulario
+    res.render("resetPassword", { token });
+  };
