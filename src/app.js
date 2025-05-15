@@ -22,6 +22,10 @@ import viewsRouter from "./routes/views.router.js";
 import ProductManager from "./managers/ProductManager.js";
 import setupSocket from "./sockets/products.socket.js";
 import passwordRouter from "./routes/password.router.js";
+import ordersRouter from "./routes/orders.router.js";
+import purchaseRouter from "./routes/purchase.router.js";
+
+
 // --------------------
 // 3. CONFIGURACIÓN INICIAL
 // --------------------
@@ -75,8 +79,11 @@ app.use(passport.session());
 // --------------------
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
+app.use("/api/purchase", purchaseRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/auth", passwordRouter);
+app.use("/api/orders", ordersRouter);
+app.use("/", passwordRouter); 
 app.use("/", viewsRouter);
 
 // --------------------

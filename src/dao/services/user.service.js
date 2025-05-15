@@ -1,4 +1,4 @@
-import UserRepository from "../repositories/User.repository.js";
+import UserRepository from "../repositories/user.repository.js";
 
 class UserService {
 	static async getById(id) {
