@@ -6,6 +6,5 @@ export default class UserDTO {
 		this.email = user.email;
 		this.age = user.age;
 		this.role = user.role;
-		// ¡No enviamos password, cart u otros datos internos!
 	}
 }

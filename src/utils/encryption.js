@@ -18,5 +18,6 @@ export const createHash = async (plainPassword) => {
  * @returns {Promise<boolean>} - true si coinciden
  */
 export const isValidPassword = async (plainPassword, hashedPassword) => {
+	if (!plainPassword || !hashedPassword) return false;
 	return await bcrypt.compare(plainPassword, hashedPassword);
 };

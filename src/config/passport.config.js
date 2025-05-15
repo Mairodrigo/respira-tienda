@@ -1,5 +1,3 @@
-// src/config/passport.config.js
-
 import passport from "passport";
 import local from "passport-local";
 import User from "../models/User.model.js";
@@ -44,10 +42,12 @@ const initializePassport = () => {
 	passport.use(
 		"login",
 		new LocalStrategy(
-			{ usernameField: "email" },
-			async (email, password, done) => {
+			{ usernameField: "email", passReqToCallback: true },
+			async (req, email, password, done) => {
 				try {
-					const user = await User.findOne({ email });
+					const user = await User.findOne({ email }).select("+password");
+					console.log("Usuario encontrado:", user);
+
 					if (!user) {
 						return done(null, false, { message: "Usuario no encontrado" });
 					}
@@ -56,6 +56,9 @@ const initializePassport = () => {
 						password,
 						user.password
 					);
+					console.log("Contraseña válida?", isPasswordValid);
+
+
 					if (!isPasswordValid) {
 						return done(null, false, { message: "Contraseña incorrecta" });
 					}
@@ -67,6 +70,7 @@ const initializePassport = () => {
 			}
 		)
 	);
+	
 
 	passport.serializeUser((user, done) => {
 		done(null, user._id);

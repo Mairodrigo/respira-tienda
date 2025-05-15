@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-// Número de rondas de salt configurables por si querés moverlo a .env
 const SALT_ROUNDS = 10;
 
 // Esquema del modelo de usuario
@@ -33,7 +32,7 @@ const userSchema = new mongoose.Schema(
 		password: {
 			type: String,
 			required: true,
-			select: false, // Excluye el password por defecto en los .find() si no se pide explícitamente
+			select: false, 
 		},
 		cart: {
 			type: mongoose.Schema.Types.ObjectId,
