@@ -1,5 +1,5 @@
 import express from "express";
-import { authToken } from "../middlewares/authToken.js"; // Middleware para verificar que el usuario esté autenticado
+import { authToken } from "../middlewares/auth.js"; 
 import {
 	createCart,
 	addProductToCart,

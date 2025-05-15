@@ -1,4 +1,5 @@
 import TicketRepository from "../repositories/Ticket.repository.js";
+import TicketDTO from "../dtos/Ticket.dto.js";
 import crypto from "crypto";
 
 /**
@@ -19,15 +20,18 @@ class TicketService {
 			products,
 		};
 
-		return await TicketRepository.create(ticket);
+		const createdTicket = await TicketRepository.create(ticket);
+		return new TicketDTO(createdTicket.toObject());
 	}
 
 	async getTicketByCode(code) {
-		return await TicketRepository.getByCode(code);
+		const ticket = await TicketRepository.getByCode(code);
+		return ticket ? new TicketDTO(ticket.toObject()) : null;
 	}
 
 	async getAllTickets() {
-		return await TicketRepository.getAll();
+		const tickets = await TicketRepository.getAll();
+		return tickets.map((ticket) => new TicketDTO(ticket.toObject()));
 	}
 }
 

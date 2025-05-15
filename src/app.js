@@ -24,7 +24,7 @@ import setupSocket from "./sockets/products.socket.js";
 import passwordRouter from "./routes/password.router.js";
 import ordersRouter from "./routes/orders.router.js";
 import purchaseRouter from "./routes/purchase.router.js";
-
+import ticketRouter from "./routes/ticket.router.js";
 
 // --------------------
 // 3. CONFIGURACIÓN INICIAL
@@ -83,6 +83,7 @@ app.use("/api/purchase", purchaseRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/auth", passwordRouter);
 app.use("/api/orders", ordersRouter);
+app.use("/api/tickets", ticketRouter);
 app.use("/", passwordRouter); 
 app.use("/", viewsRouter);
 

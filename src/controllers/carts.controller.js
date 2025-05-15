@@ -1,4 +1,4 @@
-import CartService from "../services/cart.service.js";
+import CartService from "../dao/services/cart.service.js";
 
 export const createCart = async (req, res) => {
 	try {
