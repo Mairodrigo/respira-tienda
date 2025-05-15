@@ -1,6 +1,6 @@
-import productRepo from "../dao/repositories/Product.repository.js";
-import cartRepo from "../dao/repositories/Cart.repository.js";
-import orderRepo from "../dao/repositories/Order.repository.js";
+import productRepo from "../repositories/Product.repository.js";
+import cartRepo from "../repositories/Cart.repository.js";
+import orderRepo from "../repositories/Order.repository.js";
 
 class OrderService {
 	async createOrderForUser(userId) {

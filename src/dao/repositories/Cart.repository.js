@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Cart from "../models/Cart.model.js";
+import Cart from "../../models/Cart.model.js";
 
 class CartRepository {
 	// Crear carrito (opcionalmente con ID de usuario)

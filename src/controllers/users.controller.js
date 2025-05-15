@@ -1,5 +1,5 @@
 import { generateToken } from "../utils/jwt.js";
-import UserService from "../services/User.service.js";
+import UserService from "../dao/services/user.service.js";
 import UserDTO from "../dto/User.dto.js";
 
 // Registro con Passport

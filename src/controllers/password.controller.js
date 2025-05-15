@@ -1,8 +1,6 @@
-// src/controllers/password.controller.js
-
 import User from "../models/User.model.js";
 import { generateResetToken, verifyResetToken } from "../utils/jwt.js";
-import { sendResetPasswordEmail } from "../services/email.service.js";
+import { sendResetPasswordEmail } from "../dao/services/email.service.js";
 import { createHash, isValidPassword } from "../utils/encryption.js";
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -120,8 +118,8 @@ export const resetPassword = async (req, res) => {
 export const renderResetForm = (req, res) => {
     const { token } = req.query;
     if (!token) {
-      return res.status(400).send("Token es obligatorio");
+    return res.status(400).send("Token es obligatorio");
     }
     // Renderizamos la vista y pasamos el token oculto al formulario
     res.render("resetPassword", { token });
-  };
+};

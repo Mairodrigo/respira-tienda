@@ -1,5 +1,5 @@
 import TicketRepository from "../repositories/Ticket.repository.js";
-import TicketDTO from "../dtos/Ticket.dto.js";
+import TicketDTO from "../../dto/Ticket.dto.js";
 import crypto from "crypto";
 
 /**

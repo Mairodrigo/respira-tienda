@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-	forgotPassword,
 	resetPassword,
 	requestPasswordReset,
 	renderResetForm,
@@ -8,7 +7,6 @@ import {
 
 const router = Router();
 
-router.post("/forgot-password", forgotPassword);
 router.post("/request-reset", requestPasswordReset);
 router.get("/reset-password", renderResetForm);
 router.post("/reset-password", resetPassword);

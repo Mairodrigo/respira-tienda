@@ -1,5 +1,6 @@
-import ProductRepository from "../repositories/Product.repository.js";
-import TicketService from "./ticket.service.js";
+import ProductRepository from "../dao/repositories/Product.repository.js";
+import TicketService from "../dao/services/ticket.service.js";
+import CartRepository from "../dao/repositories/Cart.repository.js"; 
 
 class PurchaseService {
 	async processPurchase(cart) {
@@ -58,5 +59,41 @@ class PurchaseService {
 		return { successfulPurchases, rejectedProducts };
 	}
 }
+
+export const purchaseCart = async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		// Obtener el carrito del usuario
+		const cart = await CartRepository.getByUserId(userId);
+		if (!cart) {
+			return res
+				.status(404)
+				.json({ status: "error", message: "Carrito no encontrado" });
+		}
+
+		if (!cart.products || cart.products.length === 0) {
+			return res
+				.status(400)
+				.json({ status: "error", message: "El carrito está vacío" });
+		}
+
+		// Procesar la compra
+		const { successfulPurchases, rejectedProducts } =
+			await PurchaseService.processPurchase(cart);
+
+		return res.status(200).json({
+			status: "success",
+			message: "Compra procesada",
+			successfulPurchases,
+			rejectedProducts,
+		});
+	} catch (error) {
+		console.error("Error en purchaseCart:", error);
+		return res
+			.status(500)
+			.json({ status: "error", message: "Error al procesar la compra" });
+	}
+};
 
 export default new PurchaseService();

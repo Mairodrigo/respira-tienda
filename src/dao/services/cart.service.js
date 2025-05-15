@@ -1,5 +1,5 @@
-import CartRepository from "../dao/repositories/Cart.repository.js";
-import ProductRepository from "../dao/repositories/Product.repository.js";
+import CartRepository from "../repositories/Cart.repository.js";
+import ProductRepository from "../repositories/Product.repository.js";
 import mongoose from "mongoose";
 
 class CartService {

@@ -1,5 +1,4 @@
-import TicketService from "../services/ticket.service.js";
-
+import TicketService from "../dao/services/ticket.service.js"
 /**
  * Obtener todos los tickets
  */

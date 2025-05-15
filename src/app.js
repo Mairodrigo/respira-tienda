@@ -17,7 +17,7 @@ import connectMongoDB from "./config/mongoose.config.js";
 import initializePassport from "./config/passport.config.js";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
-import usersRouter from "./routes/users.router.js"; // ✅ nueva importación
+import usersRouter from "./routes/users.router.js";
 import viewsRouter from "./routes/views.router.js";
 import ProductManager from "./managers/ProductManager.js";
 import setupSocket from "./sockets/products.socket.js";

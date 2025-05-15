@@ -1,11 +1,7 @@
-// src/middlewares/auth.js
-
 import { verifyToken } from "../utils/jwt.js";
 
 /**
  * Middleware para verificar la validez del token JWT en rutas protegidas.
- * Extrae el token del header "Authorization" y, si es válido,
- * adjunta el usuario decodificado a req.user.
  */
 export const authToken = (req, res, next) => {
 	const authHeader = req.headers.authorization;
@@ -38,11 +34,21 @@ export const authToken = (req, res, next) => {
 		// Pasar al siguiente middleware o controlador
 		next();
 	} catch (error) {
-		console.error("❌ Error al verificar token:", error.message);
+		console.error("Error al verificar token:", error.message);
 
 		return res.status(403).json({
 			status: "error",
 			message: "Token inválido o expirado",
 		});
 	}
+};
+
+//Validar roles
+export const authRole = (roles = []) => {
+	return (req, res, next) => {
+		if (!req.user || !roles.includes(req.user.role)) {
+			return res.status(403).json({ message: "Acceso denegado por rol" });
+		}
+		next();
+	};
 };

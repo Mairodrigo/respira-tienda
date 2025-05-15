@@ -1,4 +1,4 @@
-import Ticket from "../models/Ticket.model.js";
+import Ticket from "../../models/Ticket.model.js";
 
 class TicketRepository {
 	async create(ticketData) {

@@ -1,4 +1,4 @@
-import OrderService from "../services/Order.service.js";
+import OrderService from "../dao/services/order.service.js";
 
 export const createOrder = async (req, res) => {
 	try {
