@@ -62,7 +62,7 @@ export const addProductToCart = async (req, res) => {
 		console.error("Error en addProductToCart:", error);
 		res.status(400).json({ status: "error", message: error.message });
 	}
-};  
+};
 
 export const updateCart = async (req, res) => {
 	try {
