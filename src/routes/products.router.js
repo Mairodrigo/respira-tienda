@@ -10,21 +10,21 @@ const productsRouter = express.Router();
 
 // Ruta solo para administradores
 productsRouter.post(
-	"/create",
+	"/",
 	roleAuthorization(["admin"]), // Solo acceso para admin
 	createProduct
 );
 
 // Ruta solo para administradores
 productsRouter.put(
-	"/update/:id",
+	"/:id",
 	roleAuthorization(["admin"]), // Solo acceso para admin
 	updateProduct
 );
 
 // Ruta solo para administradores
 productsRouter.delete(
-	"/delete/:id",
+	"/:id",
 	roleAuthorization(["admin"]), // Solo acceso para admin
 	deleteProduct
 );

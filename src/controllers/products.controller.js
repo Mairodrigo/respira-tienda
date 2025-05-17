@@ -5,21 +5,20 @@ import Product from "../models/Product.model.js";
 export const getProducts = async (req, res) => {
 	try {
 		const { limit = 10, page = 1, sort, query } = req.query;
-		const filter = {};
 
-		if (query) {
-			if (query === "available") filter.status = true;
-			else filter.category = query;
-		}
-
+		const filter = getFilterOption(query);
 		const options = {
 			page: parseInt(page),
 			limit: parseInt(limit),
-			sort:
-				sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {},
+			sort: getSortOption(sort),
 		};
 
 		const products = await Product.paginate(filter, options);
+
+		const buildLink = (targetPage) =>
+			`/api/products?page=${targetPage}&limit=${limit}` +
+			(sort ? `&sort=${sort}` : "") +
+			(query ? `&query=${query}` : "");
 
 		res.json({
 			status: "success",
@@ -30,16 +29,8 @@ export const getProducts = async (req, res) => {
 			page: products.page,
 			hasPrevPage: products.hasPrevPage,
 			hasNextPage: products.hasNextPage,
-			prevLink: products.hasPrevPage
-				? `/api/products?page=${products.prevPage}&limit=${limit}${
-						sort ? `&sort=${sort}` : ""
-				  }${query ? `&query=${query}` : ""}`
-				: null,
-			nextLink: products.hasNextPage
-				? `/api/products?page=${products.nextPage}&limit=${limit}${
-						sort ? `&sort=${sort}` : ""
-				  }${query ? `&query=${query}` : ""}`
-				: null,
+			prevLink: products.hasPrevPage ? buildLink(products.prevPage) : null,
+			nextLink: products.hasNextPage ? buildLink(products.nextPage) : null,
 		});
 	} catch (error) {
 		res.status(500).json({ status: "error", message: error.message });
@@ -157,4 +148,17 @@ export const deleteProduct = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({ status: "error", message: error.message });
 	}
+};
+
+// Funciones auxiliares 
+const getFilterOption = (query) => {
+	if (!query) return {};
+	if (query === "available") return { status: true };
+	return { category: query };
+};
+
+const getSortOption = (sort) => {
+	if (sort === "asc") return { price: 1 };
+	if (sort === "desc") return { price: -1 };
+	return {};
 };
