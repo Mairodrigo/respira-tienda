@@ -3,6 +3,11 @@ import mongoose from "mongoose";
 // Esquema del carrito
 const cartSchema = new mongoose.Schema(
 	{
+		user: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+		},
 		products: [
 			{
 				productId: {
@@ -18,7 +23,7 @@ const cartSchema = new mongoose.Schema(
 			},
 		],
 	},
-	{ timestamps: true } // Añade createdAt y updatedAt
+	{ timestamps: true }
 );
 
 // Evita redefinir el modelo si ya existe

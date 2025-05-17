@@ -16,7 +16,6 @@ const cartsRouter = express.Router();
 cartsRouter.post("/", createCart);
 
 // Ruta para agregar un producto al carrito
-// Se añade el middleware authToken para garantizar que solo usuarios autenticados puedan agregar productos
 cartsRouter.post("/:cid/products/:pid", authToken, addProductToCart);
 
 // Resto de rutas para manejar el carrito

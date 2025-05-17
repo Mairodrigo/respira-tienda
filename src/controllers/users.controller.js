@@ -17,7 +17,7 @@ export const registerSuccess = (req, res) => {
 // Login con Passport
 export const loginSuccess = (req, res) => {
 	const { first_name, last_name, email, role, _id } = req.user;
-	const token = generateToken({ _id, email, role, first_name, last_name });
+	const token = generateToken({_id, email, role, first_name, last_name });
 
 	res.status(200).json({
 		status: "success",

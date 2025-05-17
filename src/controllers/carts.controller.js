@@ -26,9 +26,24 @@ export const addProductToCart = async (req, res) => {
 	try {
 		const { cid, pid } = req.params;
 		const quantity = Number(req.body.quantity) || 1;
-		const userId = req.user._id;
+		console.log("🧪 req.user:", req.user);
+
+		const userId = req.user?._id;
+		if (!userId) {
+			return res.status(401).json({
+				status: "error",
+				message: "Usuario no autenticado",
+			});
+		}
 
 		const cart = await CartService.getCartById(cid);
+
+		if (!cart || !cart.user) {
+			return res.status(404).json({
+				status: "error",
+				message: "Carrito no encontrado o no tiene usuario asociado",
+			});
+		}
 
 		if (cart.user.toString() !== userId.toString()) {
 			return res.status(403).json({
@@ -45,9 +60,10 @@ export const addProductToCart = async (req, res) => {
 			payload: updatedCart,
 		});
 	} catch (error) {
+		console.error("Error en addProductToCart:", error);
 		res.status(400).json({ status: "error", message: error.message });
 	}
-};
+};  
 
 export const updateCart = async (req, res) => {
 	try {

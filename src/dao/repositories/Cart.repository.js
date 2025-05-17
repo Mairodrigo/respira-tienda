@@ -3,14 +3,19 @@ import Cart from "../../models/Cart.model.js";
 
 class CartRepository {
 	// Crear carrito (opcionalmente con ID de usuario)
-	async create(userId = null) {
+	async create(userId) {
+		if (!userId) {
+			throw new Error("User ID is required to create a cart.");
+		}
 		const cartData = userId ? { user: userId, products: [] } : { products: [] };
 		return Cart.create(cartData);
 	}
 
 	// Obtener carrito por ID
 	async getById(cartId) {
-		return Cart.findById(cartId).populate("products.productId");
+		return Cart.findById(cartId)
+			.populate("products.productId")
+			.populate("user");
 	}
 
 	// Obtener carrito por usuario

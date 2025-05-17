@@ -1,4 +1,3 @@
-// controllers/products.controller.js
 import Product from "../models/Product.model.js";
 
 // GET /api/products
@@ -150,7 +149,7 @@ export const deleteProduct = async (req, res) => {
 	}
 };
 
-// Funciones auxiliares 
+// Funciones auxiliares
 const getFilterOption = (query) => {
 	if (!query) return {};
 	if (query === "available") return { status: true };
