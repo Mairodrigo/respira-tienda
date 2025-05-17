@@ -1,5 +1,5 @@
 import express from "express";
-import { authToken } from "../middlewares/auth.js"; 
+import { authToken } from "../middlewares/auth.js";
 import {
 	createCart,
 	addProductToCart,
@@ -13,7 +13,7 @@ import {
 const cartsRouter = express.Router();
 
 // Ruta para crear un carrito
-cartsRouter.post("/", createCart);
+cartsRouter.post("/", authToken, createCart);
 
 // Ruta para agregar un producto al carrito
 cartsRouter.post("/:cid/products/:pid", authToken, addProductToCart);
