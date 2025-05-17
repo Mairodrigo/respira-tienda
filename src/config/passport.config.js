@@ -46,8 +46,8 @@ const initializePassport = () => {
 			async (req, email, password, done) => {
 				try {
 					const user = await User.findOne({ email }).select("+password");
-					console.log("Usuario encontrado:", user);
 
+					
 					if (!user) {
 						return done(null, false, { message: "Usuario no encontrado" });
 					}
@@ -56,7 +56,6 @@ const initializePassport = () => {
 						password,
 						user.password
 					);
-					console.log("Contraseña válida?", isPasswordValid);
 
 
 					if (!isPasswordValid) {

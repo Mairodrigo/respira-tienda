@@ -16,11 +16,12 @@ export const registerSuccess = (req, res) => {
 
 // Login con Passport
 export const loginSuccess = (req, res) => {
-	const { first_name, last_name, email, role, _id } = req.user;
-	const token = generateToken({_id, email, role, first_name, last_name });
+	if (!req.user) {
+		return res.status(401).json({ error: "Credenciales inválidas" });
+	}
 
-	res.status(200).json({
-		status: "success",
+	const token = generateToken(req.user);
+	res.json({
 		message: "Login exitoso",
 		token,
 	});

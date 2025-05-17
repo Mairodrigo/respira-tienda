@@ -19,7 +19,6 @@ export const authToken = (req, res, next) => {
 
 	try {
 		const decodedUser = verifyToken(token);
-		console.log("🧪 Token decodificado:", decodedUser);
 
 		// Validar el contenido del token
 		if (!decodedUser || typeof decodedUser !== "object" || !decodedUser.email) {
@@ -46,6 +45,7 @@ export const authToken = (req, res, next) => {
 
 //Validar roles
 export const authRole = (roles = []) => {
+	
 	return (req, res, next) => {
 		if (!req.user || !roles.includes(req.user.role)) {
 			return res.status(403).json({ message: "Acceso denegado por rol" });

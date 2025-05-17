@@ -22,8 +22,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 			);
 
 			const result = await response.json();
-			console.log("Respuesta del servidor:", result);
-
 			if (response.ok) {
 				alert("Producto agregado al carrito");
 			} else {

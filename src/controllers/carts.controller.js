@@ -26,7 +26,6 @@ export const addProductToCart = async (req, res) => {
 	try {
 		const { cid, pid } = req.params;
 		const quantity = Number(req.body.quantity) || 1;
-		console.log("🧪 req.user:", req.user);
 
 		const userId = req.user?._id;
 		if (!userId) {

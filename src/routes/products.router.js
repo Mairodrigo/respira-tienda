@@ -1,4 +1,8 @@
 import express from "express";
+import {
+	authToken,
+	authRole
+} from "../middlewares/auth.js";
 import { roleAuthorization } from "../middlewares/roleAuthorization.js";
 import {
 	getProducts,
@@ -19,9 +23,11 @@ productsRouter.get("/:pid", getProductById);
 // Ruta solo admin - Crear producto
 productsRouter.post(
 	"/",
-	roleAuthorization(["admin"]), 
-	createProduct
+	authToken, 
+	roleAuthorization(["admin"]),
+	createProduct 
 );
+
 
 // Ruta solo admin - Actualizar producto
 productsRouter.put(

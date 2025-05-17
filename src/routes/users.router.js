@@ -23,7 +23,7 @@ usersRouter.post(
 	"/login",
 	passport.authenticate("login", {
 		failureRedirect: "/api/users/fail-login",
-		session: false, // importante si estás usando JWT
+		session: false, 
 	}),
 	loginSuccess
 );
@@ -31,7 +31,6 @@ usersRouter.post(
 usersRouter.get("/fail-register", failRegister);
 usersRouter.get("/fail-login", failLogin);
 
-// ✅ Nueva ruta protegida con token
 usersRouter.get("/current", authToken, getCurrentUser);
 
 export default usersRouter;
