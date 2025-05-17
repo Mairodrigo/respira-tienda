@@ -1,57 +1,33 @@
 import nodemailer from "nodemailer";
-import dotenv from "dotenv";
 
-dotenv.config();
+let testAccount = await nodemailer.createTestAccount();
 
-const EMAIL_SERVICE = process.env.EMAIL_SERVICE || "gmail";
-const EMAIL_USER = process.env.EMAIL_USER || "test@example.com";
-const EMAIL_PASS = process.env.EMAIL_PASS || "claveEmailFalsa";
-
-/**
- * Transporter configurado para enviar correos.
- */
 const transporter = nodemailer.createTransport({
-	service: EMAIL_SERVICE,
+	host: "smtp.ethereal.email",
+	port: 587,
 	auth: {
-		user: EMAIL_USER,
-		pass: EMAIL_PASS,
+		user: testAccount.user,
+		pass: testAccount.pass,
 	},
 });
 
-/**
- * Envía un correo con el enlace para restablecer contraseña.
- * @param {string} to        - Dirección de email del usuario
- * @param {string} resetLink - Enlace para resetear contraseña
- */
 export const sendResetPasswordEmail = async (to, resetLink) => {
 	try {
 		const mailOptions = {
-			from: `"Soporte Ecommerce" <${EMAIL_USER}>`,
+			from: `"Soporte Ecommerce" <${testAccount.user}>`,
 			to,
 			subject: "Recuperación de contraseña",
 			html: `
-        <h2>Recuperación de Contraseña</h2>
-        <p>Hola,</p>
-        <p>Haz clic en el siguiente botón para restablecer tu contraseña. Este enlace expirará en 1 hora.</p>
-        <a href="${resetLink}" style="
-          display: inline-block;
-          padding: 10px 20px;
-          background-color: #007bff;
-          color: #fff;
-          text-decoration: none;
-          border-radius: 5px;
-          font-weight: bold;
-        ">
-          Restablecer contraseña
-        </a>
-        <p>Si no solicitaste este correo, puedes ignorarlo.</p>
-        <hr />
-        <p>— El equipo de Soporte de Ecommerce</p>
-      `,
+				<h2>Recuperación de Contraseña</h2>
+				<p>Haz clic en el botón para restablecer tu contraseña.</p>
+				<a href="${resetLink}">Restablecer</a>
+			`,
 		};
 
-		await transporter.sendMail(mailOptions);
-		console.log("📧 Email de recuperación enviado a:", to);
+		const info = await transporter.sendMail(mailOptions);
+
+		console.log("📨 Email enviado: %s", info.messageId);
+		console.log("🔍 Vista previa: %s", nodemailer.getTestMessageUrl(info));
 	} catch (error) {
 		console.error("❌ Error al enviar el email:", error.message);
 		throw new Error("No se pudo enviar el correo de recuperación");
