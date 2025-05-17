@@ -47,19 +47,6 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-// Hash de contraseña antes de guardar
-userSchema.pre("save", async function (next) {
-	if (!this.isModified("password")) return next();
-
-	try {
-		const hashedPassword = await bcrypt.hash(this.password, SALT_ROUNDS);
-		this.password = hashedPassword;
-		next();
-	} catch (error) {
-		next(error);
-	}
-});
-
 // Método para comparar contraseñas
 userSchema.methods.isValidPassword = async function (plainPassword) {
 	return bcrypt.compare(plainPassword, this.password);
