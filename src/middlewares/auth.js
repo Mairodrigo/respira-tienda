@@ -19,7 +19,6 @@ export const authToken = (req, res, next) => {
 
 	try {
 		const decodedUser = verifyToken(token);
-		console.log("🎫 Token decodificado:", decodedUser);
 
 		// Validar el contenido del token
 		if (!decodedUser || typeof decodedUser !== "object" || !decodedUser.email) {
