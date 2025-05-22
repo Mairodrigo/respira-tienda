@@ -2,13 +2,15 @@ import mongoose from "mongoose";
 import Cart from "../../models/Cart.model.js";
 
 class CartRepository {
-	// Crear carrito (opcionalmente con ID de usuario)
+	// Crear carrito
 	async create(userId) {
 		if (!userId) {
 			throw new Error("User ID is required to create a cart.");
 		}
 		const cartData = userId ? { user: userId, products: [] } : { products: [] };
 		return Cart.create(cartData);
+		
+		
 	}
 
 	// Obtener carrito por ID

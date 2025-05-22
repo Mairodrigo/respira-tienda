@@ -1,4 +1,3 @@
-// controllers/views.controller.js
 import Product from "../models/Product.model.js";
 import Cart from "../models/Cart.model.js";
 

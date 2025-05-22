@@ -35,9 +35,6 @@ class CartService {
 		);
 		if (!updatedCart) throw new Error("No se pudo agregar el producto");
 
-		// TODO: actualizar stock en Product si querés que sea inmediato
-		// await ProductRepository.updateStock(productId, product.stock - quantity);
-
 		return updatedCart;
 	}
 

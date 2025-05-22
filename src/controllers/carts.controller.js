@@ -2,12 +2,25 @@ import CartService from "../dao/services/cart.service.js";
 
 export const createCart = async (req, res) => {
 	try {
-		const userId = req.user?._id || null;
+		if (!req.user || !req.user._id) {
+			console.log("Usuario no autenticado en createCart");
+			return res.status(401).json({
+				status: "error",
+				message: "Usuario no autenticado",
+			});
+		}
+
+		const userId = req.user._id;
+		console.log("Usuario autenticado, ID:", userId);
+
 		const newCart = await CartService.createCart(userId);
+		console.log("Carrito creado con user:", newCart.user);
+
 		res
 			.status(201)
 			.json({ status: "success", message: "Carrito creado", cart: newCart });
 	} catch (error) {
+		console.error("Error en createCart:", error.message);
 		res.status(500).json({ status: "error", message: error.message });
 	}
 };
@@ -28,6 +41,8 @@ export const addProductToCart = async (req, res) => {
 		const quantity = Number(req.body.quantity) || 1;
 
 		const userId = req.user?._id;
+		console.log("🧩 ID del usuario autenticado:", userId);
+
 		if (!userId) {
 			return res.status(401).json({
 				status: "error",
@@ -36,6 +51,7 @@ export const addProductToCart = async (req, res) => {
 		}
 
 		const cart = await CartService.getCartById(cid);
+		console.log("🛒 Carrito cargado:", JSON.stringify(cart, null, 2));
 
 		if (!cart || !cart.user) {
 			return res.status(404).json({
@@ -44,7 +60,14 @@ export const addProductToCart = async (req, res) => {
 			});
 		}
 
-		if (cart.user.toString() !== userId.toString()) {
+		console.log(
+			"🔍 Comparando:",
+			cart.user.toString(),
+			"===",
+			userId.toString()
+		);
+
+		if (cart.user._id.toString() !== userId.toString()) {
 			return res.status(403).json({
 				status: "error",
 				message: "No tienes permisos para acceder a este carrito",
@@ -59,7 +82,7 @@ export const addProductToCart = async (req, res) => {
 			payload: updatedCart,
 		});
 	} catch (error) {
-		console.error("Error en addProductToCart:", error);
+		console.error("❌ Error en addProductToCart:", error);
 		res.status(400).json({ status: "error", message: error.message });
 	}
 };

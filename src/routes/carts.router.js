@@ -15,6 +15,7 @@ const cartsRouter = express.Router();
 // Ruta para crear un carrito
 cartsRouter.post("/", authToken, createCart);
 
+
 // Ruta para agregar un producto al carrito
 cartsRouter.post("/:cid/products/:pid", authToken, addProductToCart);
 
